@@ -28,7 +28,6 @@
 " Variables
 call unite#util#set_default('g:unite_bibtex_bib_files',[])
 
-
 let s:source = {
       \ 'name': 'bibtex',
       \ }
@@ -48,6 +47,14 @@ except ImportError:
 
 
 def _read_file(filename):
+    try:
+        # ought to check version numbers or if function exists, but will cheat instead
+        errors.set_strict_mode()
+    except:
+        try:
+            errors.enable_strict_mode()
+        except:
+            vim.command("echo 'ERROR: check for pybtex errors module strict mode function'")
     errors.enable_strict_mode()
     parser = bibtex.Parser()
     return parser.parse_file(filename)
@@ -82,8 +89,15 @@ sys.stderr = vim_messenger()
 try:
     bibpath_list = vim.eval("g:unite_bibtex_bib_files")
     for bibpath in bibpath_list:
-        path = _check_path(bibpath)
-        bibdata = _read_file(path)
+        try:
+            path = _check_path(bibpath)
+        except:
+            vim.command("echo 'ERROR: bib file not found'")
+        try:
+            bibdata = _read_file(path)
+        except:
+            vim.command("echo 'ERROR: file read error'")
+
         for key in bibdata.entries:
             try:
                 k = key.encode("utf-8")
