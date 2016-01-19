@@ -49,7 +49,7 @@ for k, v in entries.items():
     vim.command("call add(l:candidates,['{}','{}'])".format(k, v))
 EOF
     return map(l:candidates,'{
-    \   "word": v:val[1],
+    \   "word": v:val[1]." ".v:val[0],
     \   "source": "bibtex",
     \   "kind": "word",
     \   "action__text": "\\cite{" . v:val[0] . "}",
