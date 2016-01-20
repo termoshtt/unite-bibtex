@@ -31,6 +31,7 @@ call unite#util#set_default('g:unite_bibtex_bib_files', [])
 
 let s:source = {
       \ 'name': 'bibtex',
+      \ 'hooks': {},
       \ }
 
 function! unite#sources#bibtex#define() 
@@ -49,11 +50,16 @@ for k, v in entries.items():
     vim.command("call add(l:candidates,['{}','{}'])".format(k, v))
 EOF
     return map(l:candidates,'{
-    \   "word": v:val[1]." ".v:val[0],
+    \   "word": v:val[0]." ".v:val[1],
     \   "source": "bibtex",
     \   "kind": "word",
     \   "action__text": "\\cite{" . v:val[0] . "}",
     \ }')
+endfunction
+
+function! s:source.hooks.on_syntax(args, context)
+  syntax match uniteSource__Doxygen_DocType /^\s\+\w\+/
+  highlight uniteSource__Doxygen_DocType ctermfg=green
 endfunction
 
 let &cpo = s:save_cpo
